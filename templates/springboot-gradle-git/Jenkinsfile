@@ -6,7 +6,7 @@ pipeline {
             steps {
                 echo 'Building ...'
                 // Insert your build commands here
-                sh 'echo building repo: $repoUrl branch: $branchName ...'
+                sh 'echo building repo: ' + ${repoUrl} +  " branch: " + ${branchName} + '...'
             }
         }
         stage('Test') {
