@@ -1,4 +1,67 @@
 pipeline {
+    agent any
+
+    stages {
+        stage('Build') {
+            steps {
+                echo 'Building ...'
+                // Insert your build commands here
+                sh 'echo building repo: ${repoUrl} branch: ${branchName} ...'
+            }
+        }
+        stage('Test') {
+            steps {
+                echo 'Testing pipelineA...'
+                // Insert your test commands here
+                sh '''
+                echo '<?xml version="1.0" encoding="UTF-8"?>
+                <testsuites>
+                    <testsuite name="dummy.TestSuite" tests="10" failures="1" skipped="2">
+                        <testcase classname="dummy.TestClass" name="test1"/>
+                        <testcase classname="dummy.TestClass" name="test2"/>
+                        <testcase classname="dummy.TestClass" name="test3"/>
+                        <testcase classname="dummy.TestClass" name="test4" time="0.001">
+                            <failure message="failure">Assertion failed</failure>
+                        </testcase>
+                        <testcase classname="dummy.TestClass" name="test5"/>
+                        <testcase classname="dummy.TestClass" name="test6"/>
+                        <testcase classname="dummy.TestClass" name="test7"/>
+                        <testcase classname="dummy.TestClass" name="test8"/>
+                        <testcase classname="dummy.TestClass" name="test9">
+                            <skipped/>
+                        </testcase>
+                        <testcase classname="dummy.TestClass" name="test10">
+                            <skipped/>
+                        </testcase>
+                    </testsuite>
+                </testsuites>' > test-results.xml
+                '''
+                junit 'test-results.xml'
+            }
+        }
+        stage('Deploy') {
+            steps {
+                echo 'Deploying pipelineA...'
+                // Insert your deploy commands here
+                sh 'echo Deploying pipelineA application...'
+            }
+        }
+    }
+
+    post {
+        always {
+            echo 'pipelineA has completed'
+        }
+        success {
+            echo 'pipelineA succeeded!'
+        }
+        failure {
+            echo 'pipelineA failed!'
+        }
+    }
+}
+
+pipeline {
   agent any
   options {
     durabilityHint("PERFORMANCE_OPTIMIZED")
