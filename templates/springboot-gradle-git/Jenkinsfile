@@ -20,9 +20,6 @@ pipeline {
                         <testcase classname="dummy.TestClass" name="test1"/>
                         <testcase classname="dummy.TestClass" name="test2"/>
                         <testcase classname="dummy.TestClass" name="test3"/>
-                        <testcase classname="dummy.TestClass" name="test4" time="0.001">
-                            <failure message="failure">Assertion failed</failure>
-                        </testcase>
                         <testcase classname="dummy.TestClass" name="test5"/>
                         <testcase classname="dummy.TestClass" name="test6"/>
                         <testcase classname="dummy.TestClass" name="test7"/>
