@@ -16,7 +16,7 @@ pipeline {
                 sh '''
                 echo '<?xml version="1.0" encoding="UTF-8"?>
                 <testsuites>
-                    <testsuite name="dummy.TestSuite" tests="10" failures="1" skipped="2">
+                    <testsuite name="dummy.TestSuite" tests="10" failures="0" skipped="2">
                         <testcase classname="dummy.TestClass" name="test1"/>
                         <testcase classname="dummy.TestClass" name="test2"/>
                         <testcase classname="dummy.TestClass" name="test3"/>
