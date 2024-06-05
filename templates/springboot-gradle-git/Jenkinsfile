@@ -37,6 +37,15 @@ pipeline {
             }
         }
 
+        stage('Security') {
+            steps {
+                echo 'Run SAST Testing...'
+                // Insert your deploy commands here
+                sh 'echo Running SonarQube...'
+            }
+        }
+
+        
         stage('Deploy') {
             steps {
                 echo 'Deploying pipelineA...'
