@@ -1,5 +1,5 @@
 pipeline {
-    agent any
+    agent none
 
     parameters {
         string(name: 'AWS_ACCOUNT_ID', description: 'Enter the AWS Account ID for deployment')
@@ -60,7 +60,7 @@ pipeline {
 // Function to get allowed AWS accounts for a user
 def getAllowedAccountsForUser(userId) {
     def accessMap = [
-        'alice': ['123456789012'],  // Alice can deploy to this AWS Account
+        'snaqvi': ['123456789012'],  // snaqvi can deploy to this AWS Account
         'bob': ['098765432109']     // Bob has access to a different account
     ]
     return accessMap.get(userId, [])
@@ -69,7 +69,7 @@ def getAllowedAccountsForUser(userId) {
 // Function to get AWS IAM role for a user
 def getRoleForUser(userId) {
     def roleMap = [
-        'alice': 'arn:aws:iam::123456789012:role/DeployRole',
+        'snaqvi': 'arn:aws:iam::123456789012:role/DeployRole',
         'bob': 'arn:aws:iam::098765432109:role/DeployRole'
     ]
     return roleMap.get(userId, '')
