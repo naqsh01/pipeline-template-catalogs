@@ -1,0 +1,8 @@
+type: pipeline-template
+version: 1
+
+name: AWS Deploy Pipeline
+description: This is an AWS Deploy Pipeline
+parameters:
+  - name: AWS_ACCOUNT_ID
+    displayName: Enter the AWS Account ID for deployment
