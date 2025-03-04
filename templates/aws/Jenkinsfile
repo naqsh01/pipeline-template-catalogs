@@ -1,0 +1,76 @@
+pipeline {
+    agent any
+
+    parameters {
+        string(name: 'AWS_ACCOUNT_ID', description: 'Enter the AWS Account ID for deployment')
+    }
+
+    environment {
+        AWS_ROLE_ARN = ""
+    }
+
+    stages {
+        stage('Validate User Access') {
+            steps {
+                script {
+                    def userId = currentBuild.getBuildCauses().get(0).userId
+                    def allowedAccounts = getAllowedAccountsForUser(userId)
+
+                    if (!allowedAccounts.contains(params.AWS_ACCOUNT_ID)) {
+                        error("Unauthorized AWS Account! User ${userId} is not allowed to deploy to ${params.AWS_ACCOUNT_ID}")
+                    }
+                    
+                    env.AWS_ROLE_ARN = getRoleForUser(userId)
+                    echo "User ${userId} is authorized to deploy to AWS Account ${params.AWS_ACCOUNT_ID}"
+                    echo "Assuming AWS Role: ${env.AWS_ROLE_ARN}"
+                }
+            }
+        }
+
+        stage('Assume AWS Role') {
+            steps {
+                script {
+                    withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'jenkins-aws-credentials']]) {
+                        sh """
+                            TEMP_ROLE=\$(aws sts assume-role --role-arn ${env.AWS_ROLE_ARN} \
+                                --role-session-name JenkinsSession)
+
+                            export AWS_ACCESS_KEY_ID=\$(echo \$TEMP_ROLE | jq -r '.Credentials.AccessKeyId')
+                            export AWS_SECRET_ACCESS_KEY=\$(echo \$TEMP_ROLE | jq -r '.Credentials.SecretAccessKey')
+                            export AWS_SESSION_TOKEN=\$(echo \$TEMP_ROLE | jq -r '.Credentials.SessionToken')
+
+                            echo "Successfully assumed role for AWS Account ${params.AWS_ACCOUNT_ID}"
+                        """
+                    }
+                }
+            }
+        }
+
+        stage('Deploy to AWS') {
+            steps {
+                script {
+                    sh "aws s3 ls"
+                    echo "Deployment commands go here..."
+                }
+            }
+        }
+    }
+}
+
+// Function to get allowed AWS accounts for a user
+def getAllowedAccountsForUser(userId) {
+    def accessMap = [
+        'alice': ['123456789012'],  // Alice can deploy to this AWS Account
+        'bob': ['098765432109']     // Bob has access to a different account
+    ]
+    return accessMap.get(userId, [])
+}
+
+// Function to get AWS IAM role for a user
+def getRoleForUser(userId) {
+    def roleMap = [
+        'alice': 'arn:aws:iam::123456789012:role/DeployRole',
+        'bob': 'arn:aws:iam::098765432109:role/DeployRole'
+    ]
+    return roleMap.get(userId, '')
+}
